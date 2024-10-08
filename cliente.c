@@ -20,9 +20,14 @@ int main(int argc, char** argv) {
     }
     
     char IP_text[]="127.0.0.1";
+    if(inet_pton(AF_INET,IP_text,(void *) &ipportserv.sin_addr)!=1)
+    {
+      perror("Formato de dirección incorrecto\n");
+      exit(EXIT_FAILURE);
+      
+    }
     
     ipportserv.sin_family = AF_INET;
-    ipportserv.sin_addr.s_addr = htonl(ipportserv.sin_addr.s_addr);
     ipportserv.sin_port = htons(puerto_serv);
     
     if (connect(socket_cliente, (struct sockaddr *) &ipportserv, size) < 0) {
