@@ -9,10 +9,17 @@
 
 /*==========CLIENTE==========*/
 int main(int argc, char** argv) {
-    int socket_cliente, puerto_serv = 6666;
+    int socket_cliente;
     struct sockaddr_in ipportserv;
     socklen_t size = sizeof(struct sockaddr_in);
     char msg[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    int puerto;
+
+    if(argc == 2) {
+        puerto = atoi(argv[1]);
+    } else {
+        puerto = 6666;
+    }
 
     if ((socket_cliente = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("No se pudo crear el socket");
@@ -28,7 +35,7 @@ int main(int argc, char** argv) {
     }
     
     ipportserv.sin_family = AF_INET;
-    ipportserv.sin_port = htons(puerto_serv);
+    ipportserv.sin_port = htons(puerto);
     
     if (connect(socket_cliente, (struct sockaddr *) &ipportserv, size) < 0) {
         perror("ERROR conectando al servidor\n");
