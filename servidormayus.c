@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     char msg[1024];
     int puerto;
 
-    if(argc == 2) {
+    if (argc == 2) {
         puerto = atoi(argv[1]);
     } else {
         puerto = 6666;
