@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,12 +13,17 @@ int main(int argc, char** argv) {
     int socket_cliente;
     struct sockaddr_in ipportserv;
     socklen_t size = sizeof(struct sockaddr_in);
+    char name_file[50], IP_text[INET_ADDRSTRLEN];
     char msg[1024];
     int puerto;
 
-    if(argc == 2) {
-        puerto = atoi(argv[1]);
+    if(argc == 4) {
+        strcpy(name_file, argv[1]);
+        strcpy(IP_text, argv[2]);
+        puerto = atoi(argv[3]);
     } else {
+        strcpy(name_file, "file.txt");
+        strcpy(IP_text, "127.0.0.1");
         puerto = 6666;
     }
 
@@ -26,7 +32,6 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
     
-    char IP_text[]="127.0.0.1";
     if(inet_pton(AF_INET,IP_text,(void *) &ipportserv.sin_addr)!=1)
     {
       perror("Formato de dirección incorrecto\n");
@@ -44,15 +49,18 @@ int main(int argc, char** argv) {
     
     FILE *entrada;
     FILE *salida;
-    entrada=fopen("texto.txt","r");
-    salida=fopen("TEXTO.txt","w+");
+    entrada=fopen(name_file,"r");
+    for (int i = 0; name_file[i] != '\0'; i++) {
+        name_file[i] = toupper(name_file[i]);
+    }
+    salida=fopen("TEXTO.TXT","w");
     
-    while(fgets(entrada,sizeof(msg),msg)!=NULL) //Mientras no llega al final del archivo
+    while(fgets(msg,sizeof(msg), entrada)!=NULL) //Mientras no llega al final del archivo
     {
       if(send(socket_cliente, msg, sizeof(msg), 0) < 0)   //Envía línea al servidor
       {
             perror("No se pudo enviar el mensaje");
-            close(socket_conex);
+            close(socket_cliente);
             exit(EXIT_FAILURE);
       }
       
@@ -61,7 +69,7 @@ int main(int argc, char** argv) {
             perror("ERROR recibiendo los datos\n");
             exit(EXIT_FAILURE);
       }
-      fputs(salida,msg);
+      fputs(msg, salida);
         
     }
     
