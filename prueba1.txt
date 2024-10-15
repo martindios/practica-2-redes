@@ -1,4 +1,4 @@
 Explicación:
 
     Se añade return en la llamada recursiva, para asegurarnos de devolver el nuevo ID generado si hay una colisión.
-    Si el ID no existe ya en la lista de edificios, el método retorna el ID generado.
+    Si el ID no existe ya en la lista de edificios, el método retorna el ID generado.asdfg
