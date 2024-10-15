@@ -5,14 +5,14 @@
 #include "netinet/in.h"
 #include "arpa/inet.h"
 #include "unistd.h"
+#include <ctype.h>
 
 /*==========SERVIDOR==========*/
 int main(int argc, char** argv) {
     int socket_serv, socket_conex;
     struct sockaddr_in ipportserv;
     socklen_t size = sizeof(struct sockaddr_in);
-    char *msg = "hola";
-    int str_len = strlen(msg);
+    char msg[1024];
     int puerto;
 
     if(argc == 2) {
@@ -56,8 +56,19 @@ int main(int argc, char** argv) {
         }
         uint16_t puertocli = ntohs(ipportcli.sin_port);
         printf("Puerto: %d\n", puertocli);
-
-        if(send(socket_conex, msg, str_len+1, 0) < 0) {
+        
+        if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
+        {
+            perror("ERROR recibiendo los datos\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        for (int i = 0; msg[i] != '\0'; i++) 
+        {
+            msg[i] = toupper(msg[i]);
+        }
+        
+        if(send(socket_conex, msg, strlen(msg), 0) < 0) {
             perror("No se pudo enviar el mensaje");
             close(socket_conex);
         }
