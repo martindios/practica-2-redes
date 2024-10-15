@@ -57,20 +57,23 @@ int main(int argc, char** argv) {
         uint16_t puertocli = ntohs(ipportcli.sin_port);
         printf("Puerto: %d\n", puertocli);
         
-        if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
-        {
-            perror("ERROR recibiendo los datos\n");
-            exit(EXIT_FAILURE);
-        }
+        while(1){
+            if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
+            {
+                perror("ERROR recibiendo los datos\n");
+                exit(EXIT_FAILURE);
+            }
         
-        for (int i = 0; msg[i] != '\0'; i++) 
-        {
-            msg[i] = toupper(msg[i]);
-        }
+            for (int i = 0; msg[i] != '\0'; i++) 
+            {
+                msg[i] = toupper(msg[i]);
+            }
         
-        if(send(socket_conex, msg, strlen(msg), 0) < 0) {
-            perror("No se pudo enviar el mensaje");
-            close(socket_conex);
+            if(send(socket_conex, msg, strlen(msg), 0) < 0) {
+                perror("No se pudo enviar el mensaje");
+                close(socket_conex);
+            }
+
         }
 
         close(socket_conex);

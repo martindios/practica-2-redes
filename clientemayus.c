@@ -53,20 +53,27 @@ int main(int argc, char** argv) {
     for (int i = 0; name_file[i] != '\0'; i++) {
         name_file[i] = toupper(name_file[i]);
     }
-    salida=fopen("TEXTO.TXT","w");
-    
-    while(fgets(msg,sizeof(msg), entrada)!=NULL) //Mientras no llega al final del archivo
-    {
-      if(send(socket_cliente, msg, sizeof(msg), 0) < 0)   //Envía línea al servidor
-      {
+    salida=fopen(name_file,"w");
+   
+    size_t len = 0;
+    while(fgets(msg,sizeof(msg), entrada)!=NULL){ //Mientras no llega al final del archivo
+        len = strlen(msg);
+
+        if(send(socket_cliente, msg, len+1, 0) < 0)   //Envía línea al servidor
+        {
             perror("No se pudo enviar el mensaje");
             close(socket_cliente);
+            fclose(entrada);
+            fclose(salida);
             exit(EXIT_FAILURE);
-      }
+        }
       
       if(recv(socket_cliente,msg,sizeof(msg),0)<0)    //Recibe línea en mayúsculas del servidor y la escribe en el archivo de salida
       {
             perror("ERROR recibiendo los datos\n");
+            close(socket_cliente);
+            fclose(entrada);
+            fclose(salida);
             exit(EXIT_FAILURE);
       }
       fputs(msg, salida);
