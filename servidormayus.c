@@ -96,11 +96,16 @@ int main(int argc, char** argv) {
                 size: numero maximo de bytes a recibir
                 flags: opciones de recepcion, por defecto 0
             */
-            if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
+            int rec=recv(socket_conex,msg,sizeof(msg),0);
+            if(rec<0)    // Recibe línea en minusculas del cliente
             {
                 perror("ERROR recibiendo los datos\n");
-                close(socket_conex);
-                exit(EXIT_FAILURE);
+                break;
+            }
+            else if(rec==0) // Si el cliente ha cerrado el socket, sale del bucle
+            {
+                printf("Se ha cerrado la conexion\n");
+                break;
             }
         
             
@@ -116,10 +121,11 @@ int main(int argc, char** argv) {
                 size: numero de bytes a enviar (longitud de la cadena)
                 flags: opciones de envio, por defecto 0
             */
-            if(send(socket_conex, msg, strlen(msg), 0) < 0) {
+            if(send(socket_conex, msg, strlen(msg)+1, 0) < 0) {
                 perror("No se pudo enviar el mensaje");
                 close(socket_conex);
             }
+            msg[len]='\0'
 
         }
 
