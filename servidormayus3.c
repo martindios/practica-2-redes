@@ -5,19 +5,17 @@
 #include "netinet/in.h"
 #include "arpa/inet.h"
 #include "unistd.h"
+#include <ctype.h>
 
 /*==========SERVIDOR==========*/
 int main(int argc, char** argv) {
     int socket_serv, socket_conex;
     struct sockaddr_in ipportserv;
     socklen_t size = sizeof(struct sockaddr_in);
-    char *msg1 = "hola";
-    char *msg2 = "mundo";
-    int str_len1 = strlen(msg1);
-    int str_len2 = strlen(msg2);
+    char msg[1024];
     int puerto;
 
-    if(argc == 2) {
+    if (argc == 2) {
         puerto = atoi(argv[1]);
     } else {
         puerto = 6666;
@@ -44,11 +42,13 @@ int main(int argc, char** argv) {
 
     while(1) {
     
+        //printf("ANtes accepts\n");
         struct sockaddr_in ipportcli;
         if ((socket_conex = accept(socket_serv, (struct sockaddr *) &ipportcli, &size)) < 0) {
             perror("No se pudo aceptar la conexión");
             close(socket_conex);
         }
+        //printf("Despues accept\n");
 
         char ipcli[INET_ADDRSTRLEN];
         if (inet_ntop(AF_INET, (const void*) &(ipportcli.sin_addr), ipcli, INET_ADDRSTRLEN) != NULL){
@@ -56,18 +56,28 @@ int main(int argc, char** argv) {
         }
         uint16_t puertocli = ntohs(ipportcli.sin_port);
         printf("Puerto: %d\n", puertocli);
+        
+        while(1){
+            if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
+            {
+                perror("ERROR recibiendo los datos\n");
+                exit(EXIT_FAILURE);
+            }
+        
+            for (int i = 0; msg[i] != '\0'; i++) 
+            {
+                msg[i] = toupper(msg[i]);
+            }
+        
+            if(send(socket_conex, msg, strlen(msg), 0) < 0) {
+                perror("No se pudo enviar el mensaje");
+                close(socket_conex);
+            }
 
-        if(send(socket_conex, msg1, str_len1+1, 0) < 0) {
-            perror("No se pudo enviar el mensaje");
-            close(socket_conex);
         }
 
-        if(send(socket_conex, msg2, str_len2+1, 0) < 0) {
-            perror("No se pudo enviar el mensaje");
-            close(socket_conex);
-        }
-    
         close(socket_conex);
+
     }
     
     close(socket_serv);
