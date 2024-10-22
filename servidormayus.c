@@ -125,8 +125,6 @@ int main(int argc, char** argv) {
                 perror("No se pudo enviar el mensaje");
                 close(socket_conex);
             }
-            msg[len]='\0'
-
         }
 
         close(socket_conex);    //Cerramos el socket de conexion al acabar la conexion

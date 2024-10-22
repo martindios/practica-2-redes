@@ -68,6 +68,7 @@ int main(int argc, char** argv) {
         if ((socket_conex = accept(socket_serv, (struct sockaddr *) &ipportcli, &size)) < 0) {
             perror("No se pudo aceptar la conexión");
             close(socket_conex);
+            exit(EXIT_FAILURE);
         }
 
         char ipcli[INET_ADDRSTRLEN];
@@ -100,5 +101,5 @@ int main(int argc, char** argv) {
     
     close(socket_serv);   //Al acabar el servidor cerramos el socket de servidor
 
-    return 0;
+    return (EXIT_SUCCESS);
 }
