@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
     if (argc == 2) {    // Comprobamos que se introduzca el numero de argumentos correcto en línea de comandos
         puerto = atoi(argv[1]);   // Primer argumento: puerto
     } else {
+        printf("No se proporcionaron argumentos correctos, trabajaremos con valores por defecto: 6666\nSi se quisieran introducir argumentos, hacer: ./ejecutable puerto\n");
         puerto = 6666;    // Puerto por defecto
     }
     
@@ -69,7 +70,7 @@ int main(int argc, char** argv) {
         */
         if ((socket_conex = accept(socket_serv, (struct sockaddr *) &ipportcli, &size)) < 0) {
             perror("No se pudo aceptar la conexión");
-            close(socket_conex);
+            exit(EXIT_FAILURE);
         }
 
         char ipcli[INET_ADDRSTRLEN];    // Cadena para guardar la IP del cliente
@@ -98,6 +99,7 @@ int main(int argc, char** argv) {
             if(recv(socket_conex,msg,sizeof(msg),0)<0)    //Recibe línea en minusculas del cliente
             {
                 perror("ERROR recibiendo los datos\n");
+                close(socket_conex);
                 exit(EXIT_FAILURE);
             }
         

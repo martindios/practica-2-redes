@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
         puerto = atoi(argv[3]);   // Tercer argumento: puerto (convertido de string a entero)
     } else {
         // Valores por defecto si no se proporcionan argumentos
+        printf("No se proporcionaron argumentos correctos, trabajaremos con valores por defecto: file.txt, 127.0.0.1, 6666\nSi se quisieran introducir argumentos, hacer: ./ejecutable archivo IP puerto\n");
         strcpy(name_file, "file.txt");    // Nombre del archivo por defecto
         strcpy(IP_text, "127.0.0.1");   // Dirección IP por defecto (localhost)
         puerto = 6666;    // Puerto por defecto
@@ -48,8 +49,8 @@ int main(int argc, char** argv) {
     */
     if(inet_pton(AF_INET,IP_text,(void *) &ipportserv.sin_addr)!=1)
     {
-      perror("Formato de dirección incorrecto\n");
-      exit(EXIT_FAILURE);
+        perror("Formato de dirección incorrecto\n");
+        exit(EXIT_FAILURE);
       
     }
     
@@ -65,6 +66,7 @@ int main(int argc, char** argv) {
     */
     if (connect(socket_cliente, (struct sockaddr *) &ipportserv, size) < 0) {
         perror("ERROR conectando al servidor\n");
+        close(socket_cliente);
         exit(EXIT_FAILURE);
     }
     
@@ -107,11 +109,11 @@ int main(int argc, char** argv) {
         */
       if(recv(socket_cliente,msg,sizeof(msg),0)<0)    //Recibe línea en mayúsculas del servidor y la escribe en el archivo de salida
       {
-            perror("ERROR recibiendo los datos\n");
-            close(socket_cliente);
-            fclose(entrada);
-            fclose(salida);
-            exit(EXIT_FAILURE);
+          perror("ERROR recibiendo los datos\n");
+          close(socket_cliente);
+          fclose(entrada);
+          fclose(salida);
+          exit(EXIT_FAILURE);
       }
       // Escribimos la respuesta en el archivo de salida
       fputs(msg, salida);
